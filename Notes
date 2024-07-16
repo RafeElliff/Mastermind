@@ -2,7 +2,8 @@ Predict outfit
 Outfit parameters:
 If it has been more than 20 shows since the item was last worn, remove it from the pool of items that can be worn
 Give each item a score based on how often it is worn (e.g. if there are 50 shows, and item A was worn in 30 of them, it would have a score of 30/50)
-Remove a significant amount of score if the item was worn the imminently previous night
+Remove a significant amount of score if the item was worn the imminently previous night, unless has been worn for 4 previous nights
+
 
 Song parameters
 If any song has ever been played before, -1 score, else
