@@ -23,8 +23,6 @@ def overwrite_file(filename, data):
 def update_choices(current_data):
     past_data = get_data_from_file("choices_for_each.txt")
     number_of_tour = current_data["number"]
-    print(current_data)
-    print(past_data)
     for key, value in current_data.items():
         past_data[key][value] = number_of_tour
     overwrite_file("choices_for_each.txt", past_data)
