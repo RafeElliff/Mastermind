@@ -29,33 +29,59 @@ def update_choices(current_data):
 
 
 def get_new_data():
-    data_from_file = get_data_from_file("past_data.txt")
-    number_of_tour = len(data_from_file) + 1
-    data_dict = {
-        "location": None,
-        "lover_bodysuit": None,
-        "man_jacket": None,
-        "lover_guitar": None,
-        "fearless_dress": None,
-        "red_shirt": None,
-        "speak_dress": None,
-        "rep_outfit": None,
-        "folkmore_dress": None,
-        "1989_top": None,
-        "1989_skirt": None,
-        "TTPD_dress": None,
-        "TTPD_set": None,
-        "TTPD_jacket": None,
-        "surprise_dress": None,
-        "midnights_shirtdress": None,
-        "midnights_bodysuit": None,
-        "karma_jacket": None,
-    }
-    for key in data_dict.keys():
-        data_dict[key] = (input(key))
-    data_dict["number"] = number_of_tour
-    append_dict_to_file_data_list("past_data.txt", data_dict)
-    update_choices(data_dict)
+    while True:
+        data_from_file = get_data_from_file("past_data.txt")
+        number_of_tour = len(data_from_file) + 1
+        data_dict = {
+            "location": None,
+            "lover_bodysuit": None,
+            "man_jacket": None,
+            "lover_guitar": None,
+            "fearless_dress": None,
+            "red_shirt": None,
+            "speak_dress": None,
+            "rep_outfit": None,
+            "folkmore_dress": None,
+            "1989_top": None,
+            "1989_skirt": None,
+            "TTPD_dress": None,
+            "TTPD_set": None,
+            "TTPD_jacket": None,
+            "surprise_dress": None,
+            "midnights_shirtdress": None,
+            "midnights_bodysuit": None,
+            "karma_jacket": None,
+        }
+        choice = input("import from spreadsheet or input directly? 1 or 2")
+        if choice == "1":
+            print("enter spreadsheet column:\n")
+            words = []
+            while True:
+                word = input().strip()
+                if not word:
+                    break
+                words.append(word)
+
+            keys_list = list(data_dict.keys())
+            data_dict= {}
+
+            for key, value in zip(keys_list, words):
+                if value != "x":
+                    data_dict[key] = value
+                else:
+                    data_dict[key] = None
+
+        elif choice == "2":
+            for key in data_dict.keys():
+                user_input = (input(key))
+                if user_input != " ":
+                    data_dict[key] = user_input
+
+        data_dict["number"] = number_of_tour
+        if data_dict["karma_jacket"] is not None:
+            append_dict_to_file_data_list("past_data.txt", data_dict)
+            update_choices(data_dict)
+
 
 
 def reset_data():
