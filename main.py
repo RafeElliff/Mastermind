@@ -314,20 +314,19 @@ def get_final_scores():
     # print(final_scores)
 
     # highest_scorers
+    return final_scores
 
-    for item in final_scores.keys():
-        highest_chance = 0
-        best_scorer = None
-        total_score_for_item = 0
-        for style in final_scores[item].keys():
-            total_score_for_item = total_score_for_item + final_scores[item][style]
-            if final_scores[item][style] > highest_chance:
-                highest_chance = final_scores[item][style]
-                best_scorer = style
-        percentage_certainty = ((highest_chance/total_score_for_item)-(1/get_tour_number()))*100
-        print(f"{item}: {best_scorer}, {round(percentage_certainty, 1)}% certainty")
-    return
-
+def percentage_breakdown(item):
+    final_scores = get_final_scores()
+    dict_of_one_item = final_scores[item]
+    total_of_all_scores = 0
+    for style in dict_of_one_item.keys():
+        total_of_all_scores = total_of_all_scores + dict_of_one_item[style]
+    print("\n")
+    for value in dict_of_one_item.keys():
+        percentage_certainty = (final_scores[item][value]/total_of_all_scores)*100
+        print(f"{value} at {round(percentage_certainty, 1)}%")
+    print("\n")
 
 
 
@@ -351,15 +350,38 @@ def delete_most_recent_data():
     overwrite_file("past_data.txt", past_data)
 
 def prepare_output():
-    get_final_scores()
+    print("\n")
+    final_scores = get_final_scores()
+    for item in final_scores.keys():
+        highest_chance = 0
+        best_scorer = None
+        total_score_for_item = 0
+        for style in final_scores[item].keys():
+            total_score_for_item = total_score_for_item + final_scores[item][style]
+            if final_scores[item][style] > highest_chance:
+                highest_chance = final_scores[item][style]
+                best_scorer = style
+        percentage_certainty = (highest_chance/total_score_for_item)*100
+        print (f"{item}: {best_scorer}, {round(percentage_certainty, 1)}% certainty")
+    print("\n")
 
 
-user_input = input("Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = delete most recent data \n 4 = delete all data" )
+user_input = input("Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = delete most recent data \n 4 = delete all data\n")
 
 if user_input == "1":
     get_new_data()
 if user_input == "2":
     prepare_output()
+    while True:
+        choice = input("If you would like to view a percentage breakdown for a certain item, enter the name now or enter 'END' to end\n")
+        if choice == "END":
+            break
+        try:
+            percentage_breakdown(choice)
+        except KeyError:
+            print("There may have been a typo, this is not a valid item")
+        except:
+            print("There was another error")
 if user_input == "3":
     delete_most_recent_data()
 if user_input == "4":
