@@ -1,5 +1,5 @@
 import ast
-
+from copy import deepcopy
 
 def get_data_from_file(filename):
     with open(filename, "r") as file:
@@ -63,7 +63,7 @@ def get_new_data():
                 words.append(word)
 
             keys_list = list(data_dict.keys())
-            data_dict= {}
+            data_dict = {}
 
             for key, value in zip(keys_list, words):
                 if value != "x":
@@ -82,12 +82,13 @@ def get_new_data():
             append_dict_to_file_data_list("past_data.txt", data_dict)
             update_choices(data_dict)
 
+
 def create_list_of_tours_worn():
     past_tour_data = get_data_from_file("past_data.txt")
     past_choices = get_data_from_file("choices_for_each.txt")
     for item in past_tour_data:
         tour_num = item["number"]
-        for key, value in item.items(): # key is the type of clothing, value is the colour
+        for key, value in item.items():  # key is the type of clothing, value is the colour
             # recent_data_for_item = current_data[key]
             if value in past_choices[key]:
                 past_choices[key][value].append(tour_num)
@@ -95,6 +96,46 @@ def create_list_of_tours_worn():
                 past_choices[key][value] = [tour_num]
     overwrite_file("choices_for_each.txt", past_choices)
 
+
+def get_tour_number():
+    tour_number = len(get_data_from_file("past_data.txt"))
+    return tour_number
+
+def get_valid_options():
+    tour_number = get_tour_number()
+    past_choices = get_data_from_file("choices_for_each.txt")
+    options = {
+        "lover_bodysuit": [],
+        "man_jacket": [],
+        "lover_guitar": [],
+        "fearless_dress": [],
+        "red_shirt": [],
+        "speak_dress": [],
+        "rep_outfit": [],
+        "folkmore_dress": [],
+        "1989_top": [],
+        "1989_skirt": [],
+        "TTPD_dress": [],
+        "TTPD_set": [],
+        "TTPD_jacket": [],
+        "surprise_dress": [],
+        "midnights_shirtdress": [],
+        "midnights_bodysuit": [],
+        "karma_jacket": []
+    }
+    for item, style in past_choices.items():
+        if item != "location" and item != "number":
+            for style in style.keys():
+                options[item].append(style)
+    valid_options = deepcopy(options)
+    for item in options.keys():
+        for style in options[item]:
+            if tour_number - past_choices[item][style][-1] > 15:
+                valid_options[item].remove(style)
+
+    return (valid_options)
+
+    # print(options)
 def reset_data():
     past_data_default = []
     choices_for_each_default = {
@@ -121,12 +162,13 @@ def reset_data():
     overwrite_file("past_data.txt", past_data_default)
     overwrite_file("choices_for_each.txt", choices_for_each_default)
 
-create_list_of_tours_worn()
+
 user_input = input("Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = delete all data")
 
 if user_input == "1":
     get_new_data()
 if user_input == "2":
-    print("working on it")
+    get_valid_options()
+    # print("working on it")
 if user_input == "3":
     reset_data()
