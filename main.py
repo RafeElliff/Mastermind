@@ -135,7 +135,49 @@ def get_valid_options():
 
     return (valid_options)
 
-    # print(options)
+def count_times_worn():
+    dict_of_scores = {
+        "location": {},
+        "lover_bodysuit": {},
+        "man_jacket": {},
+        "lover_guitar": {},
+        "fearless_dress": {},
+        "red_shirt": {},
+        "speak_dress": {},
+        "rep_outfit": {},
+        "folkmore_dress": {},
+        "1989_top": {},
+        "1989_skirt": {},
+        "TTPD_dress": {},
+        "TTPD_set": {},
+        "TTPD_jacket": {},
+        "surprise_dress": {},
+        "midnights_shirtdress": {},
+        "midnights_bodysuit": {},
+        "karma_jacket": {},
+        "number": {}
+    }
+    valid_options = get_valid_options()
+    past_choices = get_data_from_file("choices_for_each.txt")
+    for item in valid_options.keys():
+        for style in valid_options[item]:
+            list_of_appearances = past_choices[item][style]
+            initial_appearance = list_of_appearances[0]
+            total_score_for_appearance = 0
+            for appearance in list_of_appearances: #iterates through every appearance the tour has had. this rewards
+                total_score_for_appearance = total_score_for_appearance + give_weighting(appearance) #adds the score for each.
+            print(style, total_score_for_appearance)
+            final_score = total_score_for_appearance/(get_tour_number()-(initial_appearance-1)) # total score = sum of all weightings, divides by number of times it could have appeared
+            dict_of_scores[item][style] = final_score
+    return(dict_of_scores)
+
+
+def give_weighting(tour_number):
+    tour_being_checked = tour_number
+    final_tour_number = get_tour_number()
+    final_weighting = 0.5 + ((tour_being_checked-1)/(final_tour_number-1))*0.5
+    return final_weighting
+
 def reset_data():
     past_data_default = []
     choices_for_each_default = {
@@ -162,13 +204,14 @@ def reset_data():
     overwrite_file("past_data.txt", past_data_default)
     overwrite_file("choices_for_each.txt", choices_for_each_default)
 
+def get_predictions():
+    count_times_worn()
 
 user_input = input("Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = delete all data")
 
 if user_input == "1":
     get_new_data()
 if user_input == "2":
-    get_valid_options()
-    # print("working on it")
+    get_predictions()
 if user_input == "3":
     reset_data()
