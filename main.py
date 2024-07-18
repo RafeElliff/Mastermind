@@ -25,12 +25,15 @@ def update_choices(current_data):
     past_data = get_data_from_file("choices_for_each.txt")
     dict_of_lists = get_data_from_file("ordered_list_of_items_worn.txt")
     number_of_tour = current_data["number"]
+    current_data.pop("location", None)
+    current_data.pop("number", None)
     for item, style in current_data.items():  # item and style are used throughout the program to reference different layers of dictionary: item is what she wears, style is the colour/feature e.g. lover_bodysuit would be an item, pink would be a style.
         past_data[item][style].append(number_of_tour)
         dict_of_lists[item].append(style)
     past_data.pop("location", None)
     past_data.pop("number", None)
     overwrite_file("choices_for_each.txt", past_data)
+    overwrite_file("ordered_list_of_items_worn.txt", dict_of_lists)
 
 
 def get_new_data():
@@ -57,7 +60,9 @@ def get_new_data():
             "midnights_bodysuit": None,
             "karma_jacket": None,
         }
-        choice = input("import from spreadsheet or input directly? 1 or 2")
+        choice = input("import from spreadsheet or input directly? 1 or 2? end the program to update the data")
+        if choice == "3":
+            break
         if choice == "1":
             print("enter spreadsheet column:\n")
             words = []
@@ -88,7 +93,7 @@ def get_new_data():
             update_choices(data_dict)
 
 
-def create_list_of_tours_worn():
+def create_list_of_tours_worn(): #this is code that is not accessed directly in the project and is just left over from bugfixing
     past_tour_data = get_data_from_file("past_data.txt")
     past_choices = get_data_from_file("choices_for_each.txt")
     for item in past_tour_data:
@@ -270,7 +275,6 @@ def reset_data():
         "midnights_shirtdress": {},
         "midnights_bodysuit": {},
         "karma_jacket": {},
-        "number": {}
     }
     overwrite_file("past_data.txt", past_data_default)
     overwrite_file("choices_for_each.txt", choices_for_each_default)
@@ -361,7 +365,7 @@ def prepare_output():
 
 
 user_input = input(
-    "Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = delete most recent data \n 4 = delete all data\n")
+    "Choice. \n 1 = add new data \n 2 = get prediction \n 3 = delete most recent data \n 4 = delete all data\n")
 
 if user_input == "1":
     get_new_data()
