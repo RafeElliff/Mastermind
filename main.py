@@ -94,7 +94,6 @@ def create_list_of_tours_worn():
     for item in past_tour_data:
         tour_num = item["number"]
         for key, value in item.items():
-            # recent_data_for_item = current_data[key]
             if value in past_choices[key]:
                 past_choices[key][value].append(tour_num)
             else:
@@ -171,11 +170,12 @@ def count_times_worn():
             initial_appearance = list_of_appearances[0]
             total_score_for_appearance = 0
             for appearance in list_of_appearances:  # iterates through every appearance the tour has had. this rewards
-                total_score_for_appearance = total_score_for_appearance + give_weighting(appearance)  # adds the score for each.
+                total_score_for_appearance = total_score_for_appearance + give_weighting(
+                    appearance)  # adds the score for each.
                 # total_score_for_appearance = total_score_for_appearance + 1
 
             final_score = total_score_for_appearance / (get_tour_number() - (
-                        initial_appearance - 1))  # total score = sum of all weightings, divides by number of times it could have appeared
+                    initial_appearance - 1))  # total score = sum of all weightings, divides by number of times it could have appeared
             dict_of_scores[item][style] = final_score
     return (dict_of_scores)
 
@@ -244,7 +244,8 @@ def temp_function():  # this function created the ordered lists in ordered_list_
 def give_weighting(tour_number):
     tour_being_checked = tour_number
     final_tour_number = get_tour_number()
-    final_weighting = 0.5 + ((tour_being_checked - 1) / (final_tour_number - 1)) * 0.5  # this is the formula that I went with, can be changed if you want to change the weighting in favour of/against when a tour happened
+    final_weighting = 0.5 + ((tour_being_checked - 1) / (
+                final_tour_number - 1)) * 0.5  # this is the formula that I went with, can be changed if you want to change the weighting in favour of/against when a tour happened
     return final_weighting
 
 
@@ -300,21 +301,16 @@ def get_final_scores():
     scores_per_item = count_times_worn()
     chance_of_rewear = calculate_chance_of_rewear()
 
-    # chance for item = scores_per_item[item][style]
-    # for item, style in scores_per_item.items():
-    #     print(item, style)
     for item in scores_per_item.keys():
         for style in scores_per_item[item].keys():
             initial_score_of_item = scores_per_item[item][style]
             final_score_of_item = initial_score_of_item
             if list_of_items_worn[item][-1] == style:
                 final_score_of_item = initial_score_of_item * chance_of_rewear[item]
-            # print(style, initial_score_of_item, final_score_of_item)
             final_scores[item][style] = final_score_of_item
-    # print(final_scores)
 
-    # highest_scorers
     return final_scores
+
 
 def percentage_breakdown(item):
     final_scores = get_final_scores()
@@ -324,14 +320,12 @@ def percentage_breakdown(item):
         total_of_all_scores = total_of_all_scores + dict_of_one_item[style]
     print("\n")
     for value in dict_of_one_item.keys():
-        percentage_certainty = (final_scores[item][value]/total_of_all_scores)*100
+        percentage_certainty = (final_scores[item][value] / total_of_all_scores) * 100
         print(f"{value} at {round(percentage_certainty, 1)}%")
     print("\n")
 
 
-
 def delete_most_recent_data():
-
     choices_for_each = get_data_from_file("choices_for_each.txt")
     for item in choices_for_each.keys():
         for style in choices_for_each[item].keys():
@@ -344,10 +338,10 @@ def delete_most_recent_data():
     past_data = get_data_from_file("past_data.txt")
     past_data = past_data[:-1]
 
-
     overwrite_file("choices_for_each.txt", choices_for_each)
     overwrite_file("ordered_list_of_items_worn.txt", ordered_list)
     overwrite_file("past_data.txt", past_data)
+
 
 def prepare_output():
     print("\n")
@@ -361,19 +355,21 @@ def prepare_output():
             if final_scores[item][style] > highest_chance:
                 highest_chance = final_scores[item][style]
                 best_scorer = style
-        percentage_certainty = (highest_chance/total_score_for_item)*100
-        print (f"{item}: {best_scorer}, {round(percentage_certainty, 1)}% certainty")
+        percentage_certainty = (highest_chance / total_score_for_item) * 100
+        print(f"{item}: {best_scorer}, {round(percentage_certainty, 1)}% certainty")
     print("\n")
 
 
-user_input = input("Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = delete most recent data \n 4 = delete all data\n")
+user_input = input(
+    "Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = delete most recent data \n 4 = delete all data\n")
 
 if user_input == "1":
     get_new_data()
 if user_input == "2":
     prepare_output()
     while True:
-        choice = input("If you would like to view a percentage breakdown for a certain item, enter the name now or enter 'END' to end\n")
+        choice = input(
+            "If you would like to view a percentage breakdown for a certain item, enter the name now or enter 'END' to end\n")
         if choice == "END":
             break
         try:
