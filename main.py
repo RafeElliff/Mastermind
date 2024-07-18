@@ -24,7 +24,7 @@ def update_choices(current_data):
     past_data = get_data_from_file("choices_for_each.txt")
     number_of_tour = current_data["number"]
     for key, value in current_data.items():
-        past_data[key][value] = number_of_tour
+        past_data[key][value].append(number_of_tour)
     overwrite_file("choices_for_each.txt", past_data)
 
 
@@ -82,7 +82,18 @@ def get_new_data():
             append_dict_to_file_data_list("past_data.txt", data_dict)
             update_choices(data_dict)
 
-
+def temp_function():
+    past_tour_data = get_data_from_file("past_data.txt")
+    past_choices = get_data_from_file("choices_for_each.txt")
+    for item in past_tour_data:
+        tour_num = item["number"]
+        for key, value in item.items(): # key is the type of clothing, value is the colour
+            # recent_data_for_item = current_data[key]
+            if value in past_choices[key]:
+                past_choices[key][value].append(tour_num)
+            else:
+                past_choices[key][value] = [tour_num]
+    overwrite_file("choices_for_each.txt", past_choices)
 
 def reset_data():
     past_data_default = []
@@ -110,7 +121,7 @@ def reset_data():
     overwrite_file("past_data.txt", past_data_default)
     overwrite_file("choices_for_each.txt", choices_for_each_default)
 
-
+temp_function()
 user_input = input("Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = delete all data")
 
 if user_input == "1":
