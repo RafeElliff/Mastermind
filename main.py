@@ -22,9 +22,11 @@ def overwrite_file(filename, data):
 
 def update_choices(current_data):
     past_data = get_data_from_file("choices_for_each.txt")
+    dict_of_lists = get_data_from_file("ordered_list_of_items_worn.txt")
     number_of_tour = current_data["number"]
-    for key, value in current_data.items():
-        past_data[key][value].append(number_of_tour)
+    for item, style in current_data.items(): #item and style are used throughout the program to reference different layers of dictionary: item is what she wears, style is the colour/feature e.g. lover_bodysuit would be an item, pink would be a style.
+        past_data[item][style].append(number_of_tour)
+        dict_of_lists[item].append(style)
     overwrite_file("choices_for_each.txt", past_data)
 
 
@@ -88,7 +90,7 @@ def create_list_of_tours_worn():
     past_choices = get_data_from_file("choices_for_each.txt")
     for item in past_tour_data:
         tour_num = item["number"]
-        for key, value in item.items():  # key is the type of clothing, value is the colour
+        for key, value in item.items():
             # recent_data_for_item = current_data[key]
             if value in past_choices[key]:
                 past_choices[key][value].append(tour_num)
@@ -130,7 +132,7 @@ def get_valid_options():
     valid_options = deepcopy(options)
     for item in options.keys():
         for style in options[item]:
-            if tour_number - past_choices[item][style][-1] > 15:
+            if tour_number - past_choices[item][style][-1] > 15: # 15 is a pretty arbitrary number. I figured, if she doesn't wear something for 15 tours in a row, she probably never will again. It can be changed
                 valid_options[item].remove(style)
 
     return (valid_options)
@@ -166,16 +168,75 @@ def count_times_worn():
             total_score_for_appearance = 0
             for appearance in list_of_appearances: #iterates through every appearance the tour has had. this rewards
                 total_score_for_appearance = total_score_for_appearance + give_weighting(appearance) #adds the score for each.
-            print(style, total_score_for_appearance)
             final_score = total_score_for_appearance/(get_tour_number()-(initial_appearance-1)) # total score = sum of all weightings, divides by number of times it could have appeared
             dict_of_scores[item][style] = final_score
     return(dict_of_scores)
+
+def calculate_chance_of_rewear():
+    baseline_dict = {
+        "lover_bodysuit": 0,
+        "man_jacket": 0,
+        "lover_guitar": 0,
+        "fearless_dress":0,
+        "red_shirt":0,
+        "speak_dress":0,
+        "rep_outfit":0,
+        "folkmore_dress":0,
+        "1989_top":0,
+        "1989_skirt":0,
+        "TTPD_dress":0,
+        "TTPD_set":0,
+        "TTPD_jacket":0,
+        "surprise_dress":0,
+        "midnights_shirtdress":0,
+        "midnights_bodysuit":0,
+        "karma_jacket":0,
+    }
+    past_choices_lists = get_data_from_file("ordered_list_of_items_worn.txt")
+    for item, list_of_items in past_choices_lists.items():
+        total_count_of_rewear = 0
+        for count in range (0, len(list_of_items)-1):
+            if list_of_items[count] == list_of_items[count+1]:
+                total_count_of_rewear = total_count_of_rewear +1
+            percentage_chance = total_count_of_rewear / (len(list_of_items)-1)
+            baseline_dict[item] = percentage_chance
+    return baseline_dict
+
+def temp_function(): # this function created the ordered lists in ordered_list_of_items_worn.txt, it is now done automatically and is not needed anymore
+    baseline_dict = {
+        "lover_bodysuit": [],
+        "man_jacket": [],
+        "lover_guitar": [],
+        "fearless_dress": [],
+        "red_shirt": [],
+        "speak_dress": [],
+        "rep_outfit": [],
+        "folkmore_dress": [],
+        "1989_top": [],
+        "1989_skirt": [],
+        "TTPD_dress": [],
+        "TTPD_set": [],
+        "TTPD_jacket": [],
+        "surprise_dress": [],
+        "midnights_shirtdress": [],
+        "midnights_bodysuit": [],
+        "karma_jacket": [],
+    }
+
+    past_choices = get_data_from_file("past_data.txt")
+    for item in baseline_dict.keys():
+        for night in past_choices:
+            if night[item] is not None:
+                baseline_dict[item].append(night[item])
+    overwrite_file("ordered_list_of_items_worn.txt", baseline_dict)
+    return baseline_dict
+
 
 
 def give_weighting(tour_number):
     tour_being_checked = tour_number
     final_tour_number = get_tour_number()
-    final_weighting = 0.5 + ((tour_being_checked-1)/(final_tour_number-1))*0.5
+    final_weighting = 0.5 + ((tour_being_checked-1)/(final_tour_number-1))*0.5 # this is the formula that I went with, can be changed if you want to change the weighting in favour of/against when a tour happened
     return final_weighting
 
 def reset_data():
@@ -212,6 +273,7 @@ user_input = input("Choice. \n 1 = add new data. \n 2 = get prediction \n 3 = de
 if user_input == "1":
     get_new_data()
 if user_input == "2":
-    get_predictions()
+    # get_predictions()
+
 if user_input == "3":
     reset_data()
