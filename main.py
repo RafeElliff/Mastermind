@@ -349,6 +349,26 @@ def delete_most_recent_data():
 
 def prepare_output():
     print("\n")
+    total_expected_points = 0
+    point_values_for_questions = {
+        "lover_bodysuit": 6,
+        "man_jacket": 6,
+        "lover_guitar": 4,
+        "fearless_dress": 6,
+        "red_shirt": 7,
+        "speak_dress": 9,
+        "rep_outfit": 2,
+        "folkmore_dress": 9,
+        "1989_top": 7,
+        "1989_skirt": 7,
+        "TTPD_dress": 3,
+        "TTPD_set": 6,
+        "TTPD_jacket": 5,
+        "surprise_dress": 6,
+        "midnights_shirtdress": 7,
+        "midnights_bodysuit": 5,
+        "karma_jacket": 5,
+    }
     final_scores = get_final_scores()
     for item in final_scores.keys():
         highest_chance = 0
@@ -359,8 +379,17 @@ def prepare_output():
             if final_scores[item][style] > highest_chance:
                 highest_chance = final_scores[item][style]
                 best_scorer = style
-        percentage_certainty = (highest_chance / total_score_for_item) * 100
-        print(f"{item}: {best_scorer}, {round(percentage_certainty, 1)}% certainty")
+        percentage_certainty = round(((highest_chance / total_score_for_item) * 100), 1)
+        point_value = point_values_for_questions[item]
+        expected_points = round(point_value * (percentage_certainty/100), 1)
+        total_expected_points = total_expected_points + expected_points
+        print(f"{item}: {best_scorer}, {percentage_certainty}% certainty. expected_points = {expected_points}")
+        total_available_points = 0
+        for item, point_value in point_values_for_questions.items():
+            total_available_points = total_available_points + point_value
+    total_expected_points = round(total_expected_points, 0)
+    print(f"Total expected points: {total_expected_points}. As there were {total_available_points} points available, you should get {round((total_expected_points/total_available_points)*100, 1)}%")
+
     print("\n")
 
 
@@ -386,3 +415,5 @@ if user_input == "3":
     delete_most_recent_data()
 if user_input == "4":
     reset_data()
+else:
+    pass
