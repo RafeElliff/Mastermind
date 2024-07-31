@@ -410,6 +410,19 @@ def prepare_output():
     print(f"Total expected points: {total_expected_points}. As there were {total_available_points} points available, you should get {round((total_expected_points/total_available_points)*100, 1)}%")
 
     print("\n")
+def return_data_for_tour():
+    index = int(input("Which tour? Input '0' for the most recent tour, -1 for the second most recent etc"))
+    choice = input("items and styles or just styles? Please input 1 or 2")
+    past_data = get_data_from_file("past_data.txt")
+    if index > 0:
+        index = index - 1
+    dict_of_data = past_data[index]
+    for item, style in dict_of_data.items():
+        if choice == "1":
+            print(item, style)
+        else:
+            print(style)
+
 
 
 user_input = input(
@@ -437,6 +450,7 @@ if user_input == "4":
 if user_input == "5":
     print(calc_days_since_last_worn("lover_bodysuit", "pink"))
 if user_input == "6":
-    print("WIP")
+    while True:
+        return_data_for_tour()
 else:
     pass
