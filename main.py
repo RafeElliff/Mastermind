@@ -60,7 +60,8 @@ def get_new_data():
             "midnights_bodysuit": None,
             "karma_jacket": None,
         }
-        choice = input("import from spreadsheet or input directly? 1 or 2? end the program to update the data")
+        print(f"The most recent tour was {data_from_file[-1]['location']}, number {get_tour_number()}")
+        choice = input("import from spreadsheet or input directly? 1 or 2? 3 to end the program and enter the data")
         if choice == "3":
             break
         if choice == "1":
