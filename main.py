@@ -1,4 +1,5 @@
 import ast
+import math
 from copy import deepcopy
 
 
@@ -250,9 +251,24 @@ def temp_function():  # this function created the ordered lists in ordered_list_
 def give_weighting(tour_number):
     tour_being_checked = tour_number
     final_tour_number = get_tour_number()
-    final_weighting = 0.5 + ((tour_being_checked - 1) / (
-                final_tour_number - 1)) * 0.5  # this is the formula that I went with, can be changed if you want to change the weighting in favour of/against when a tour happened
+    final_weighting = 0.5 + ((tour_being_checked - 1) / (final_tour_number - 1)) * 0.5  # this is the formula that I
+    # went with, can be changed if you want to change the weighting in favour of/against when a tour happened
     return final_weighting
+
+def calc_days_since_last_worn(item, style):
+    past_data = get_data_from_file("choices_for_each.txt")
+    tour_number = get_tour_number()
+    days_since_last_worn = tour_number - past_data[item][style][-1]
+    return days_since_last_worn
+
+def calc_weighting_of_days_since_last_worn(item, style):
+    days_since_last_worn = calc_days_since_last_worn(item, style)
+    valid_options = get_valid_options()
+    num_of_options = len(valid_options[item])
+    weighting = min(math.sqrt(days_since_last_worn), num_of_options) + 1
+    print(item, style, weighting)
+    return weighting
+
 
 
 def reset_data():
@@ -304,14 +320,16 @@ def get_final_scores():
 
     list_of_items_worn = get_data_from_file("ordered_list_of_items_worn.txt")
     scores_per_item = count_times_worn()
-    chance_of_rewear = calculate_chance_of_rewear()
+    rewear_dict = calculate_chance_of_rewear()
 
     for item in scores_per_item.keys():
         for style in scores_per_item[item].keys():
             initial_score_of_item = scores_per_item[item][style]
             final_score_of_item = initial_score_of_item
-            if list_of_items_worn[item][-1] == style:
-                final_score_of_item = initial_score_of_item * chance_of_rewear[item]
+            # if list_of_items_worn[item][-1] == style:
+            #     final_score_of_item = initial_score_of_item * chance_of_rewear[item]
+            days_weighting = calc_weighting_of_days_since_last_worn(item, style)
+            final_score_of_item = days_weighting / rewear_dict[item]
             final_scores[item][style] = final_score_of_item
 
     return final_scores
@@ -395,7 +413,7 @@ def prepare_output():
 
 
 user_input = input(
-    "Choice. \n 1 = add new data \n 2 = get prediction \n 3 = delete most recent data \n 4 = delete all data\n")
+    "Choice. \n 1 = add new data \n 2 = get prediction \n 3 = delete most recent data \n 4 = delete all data\n 5 = testing features\n 6 = get data for a given tour")
 
 if user_input == "1":
     get_new_data()
@@ -416,5 +434,9 @@ if user_input == "3":
     delete_most_recent_data()
 if user_input == "4":
     reset_data()
+if user_input == "5":
+    print(calc_days_since_last_worn("lover_bodysuit", "pink"))
+if user_input == "6":
+    print("WIP")
 else:
     pass
