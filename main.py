@@ -3,6 +3,7 @@ import math
 from copy import deepcopy
 
 
+# File management related functions
 def get_data_from_file(filename):
     with open(filename, "r") as file:
         text = file.read()
@@ -22,20 +23,7 @@ def overwrite_file(filename, data):
         file.write(str(data))
 
 
-def update_choices(current_data):
-    past_data = get_data_from_file("choices_for_each.txt")
-    dict_of_lists = get_data_from_file("ordered_list_of_items_worn.txt")
-    number_of_tour = current_data["number"]
-    current_data.pop("location", None)
-    current_data.pop("number", None)
-    for item, style in current_data.items():  # item and style are used throughout the program to reference different layers of dictionary: item is what she wears, style is the colour/feature e.g. lover_bodysuit would be an item, pink would be a style.
-        past_data[item][style].append(number_of_tour)
-        dict_of_lists[item].append(style)
-    past_data.pop("location", None)
-    past_data.pop("number", None)
-    overwrite_file("choices_for_each.txt", past_data)
-    overwrite_file("ordered_list_of_items_worn.txt", dict_of_lists)
-
+# Functions related to adding data
 
 def get_new_data():
     while True:
@@ -95,7 +83,100 @@ def get_new_data():
             update_choices(data_dict)
 
 
-def create_list_of_tours_worn(): #this is code that is not accessed directly in the project and is just left over from bugfixing
+def update_choices(current_data):
+    past_data = get_data_from_file("choices_for_each.txt")
+    dict_of_lists = get_data_from_file("ordered_list_of_items_worn.txt")
+    number_of_tour = current_data["number"]
+    current_data.pop("location", None)
+    current_data.pop("number", None)
+    for item, style in current_data.items():  # item and style are used throughout the program to reference different layers of dictionary: item is what she wears, style is the colour/feature e.g. lover_bodysuit would be an item, pink would be a style.
+        past_data[item][style].append(number_of_tour)
+        dict_of_lists[item].append(style)
+    past_data.pop("location", None)
+    past_data.pop("number", None)
+    overwrite_file("choices_for_each.txt", past_data)
+    overwrite_file("ordered_list_of_items_worn.txt", dict_of_lists)
+
+
+# functions that are related to deleting data
+
+def reset_data():
+    past_data_default = []
+    choices_for_each_default = {
+        "location": {},
+        "lover_bodysuit": {},
+        "man_jacket": {},
+        "lover_guitar": {},
+        "fearless_dress": {},
+        "red_shirt": {},
+        "speak_dress": {},
+        "rep_outfit": {},
+        "folkmore_dress": {},
+        "1989_top": {},
+        "1989_skirt": {},
+        "TTPD_dress": {},
+        "TTPD_set": {},
+        "TTPD_jacket": {},
+        "surprise_dress": {},
+        "midnights_shirtdress": {},
+        "midnights_bodysuit": {},
+        "karma_jacket": {},
+    }
+    overwrite_file("past_data.txt", past_data_default)
+    overwrite_file("choices_for_each.txt", choices_for_each_default)
+
+
+def delete_most_recent_data():
+    choices_for_each = get_data_from_file("choices_for_each.txt")
+    for item in choices_for_each.keys():
+        for style in choices_for_each[item].keys():
+            if get_tour_number() in choices_for_each[item][style]:
+                choices_for_each[item][style].remove(get_tour_number())
+    ordered_list = get_data_from_file("ordered_list_of_items_worn.txt")
+    for item in ordered_list.keys():
+        ordered_list[item] = ordered_list[item][:-1]
+    past_data = get_data_from_file("past_data.txt")
+    past_data = past_data[:-1]
+
+    overwrite_file("choices_for_each.txt", choices_for_each)
+    overwrite_file("ordered_list_of_items_worn.txt", ordered_list)
+    overwrite_file("past_data.txt", past_data)
+
+
+# functions that are not accessed, but are remnants from bug-fixing
+
+
+def temp_function():  # this function created the ordered lists in ordered_list_of_items_worn.txt, it is now done automatically and is not needed anymore
+    baseline_dict = {
+        "lover_bodysuit": [],
+        "man_jacket": [],
+        "lover_guitar": [],
+        "fearless_dress": [],
+        "red_shirt": [],
+        "speak_dress": [],
+        "rep_outfit": [],
+        "folkmore_dress": [],
+        "1989_top": [],
+        "1989_skirt": [],
+        "TTPD_dress": [],
+        "TTPD_set": [],
+        "TTPD_jacket": [],
+        "surprise_dress": [],
+        "midnights_shirtdress": [],
+        "midnights_bodysuit": [],
+        "karma_jacket": [],
+    }
+
+    past_choices = get_data_from_file("past_data.txt")
+    for item in baseline_dict.keys():
+        for night in past_choices:
+            if night[item] is not None:
+                baseline_dict[item].append(night[item])
+    overwrite_file("ordered_list_of_items_worn.txt", baseline_dict)
+    return baseline_dict
+
+
+def create_list_of_tours_worn():  # this is code that is not accessed directly in the project and is just left over from bugfixing
     past_tour_data = get_data_from_file("past_data.txt")
     past_choices = get_data_from_file("choices_for_each.txt")
     for item in past_tour_data:
@@ -107,6 +188,8 @@ def create_list_of_tours_worn(): #this is code that is not accessed directly in 
                 past_choices[key][value] = [tour_num]
     overwrite_file("choices_for_each.txt", past_choices)
 
+
+# functions that are necessary for the algorithm
 
 def get_tour_number():
     tour_number = len(get_data_from_file("past_data.txt"))
@@ -218,36 +301,6 @@ def calculate_chance_of_rewear():
     return baseline_dict
 
 
-def temp_function():  # this function created the ordered lists in ordered_list_of_items_worn.txt, it is now done automatically and is not needed anymore
-    baseline_dict = {
-        "lover_bodysuit": [],
-        "man_jacket": [],
-        "lover_guitar": [],
-        "fearless_dress": [],
-        "red_shirt": [],
-        "speak_dress": [],
-        "rep_outfit": [],
-        "folkmore_dress": [],
-        "1989_top": [],
-        "1989_skirt": [],
-        "TTPD_dress": [],
-        "TTPD_set": [],
-        "TTPD_jacket": [],
-        "surprise_dress": [],
-        "midnights_shirtdress": [],
-        "midnights_bodysuit": [],
-        "karma_jacket": [],
-    }
-
-    past_choices = get_data_from_file("past_data.txt")
-    for item in baseline_dict.keys():
-        for night in past_choices:
-            if night[item] is not None:
-                baseline_dict[item].append(night[item])
-    overwrite_file("ordered_list_of_items_worn.txt", baseline_dict)
-    return baseline_dict
-
-
 def give_weighting(tour_number):
     tour_being_checked = tour_number
     final_tour_number = get_tour_number()
@@ -255,11 +308,13 @@ def give_weighting(tour_number):
     # went with, can be changed if you want to change the weighting in favour of/against when a tour happened
     return final_weighting
 
+
 def calc_days_since_last_worn(item, style):
     past_data = get_data_from_file("choices_for_each.txt")
     tour_number = get_tour_number()
     days_since_last_worn = tour_number - past_data[item][style][-1]
     return days_since_last_worn
+
 
 def calc_weighting_of_days_since_last_worn(item, style):
     days_since_last_worn = calc_days_since_last_worn(item, style)
@@ -270,32 +325,7 @@ def calc_weighting_of_days_since_last_worn(item, style):
     return weighting
 
 
-
-def reset_data():
-    past_data_default = []
-    choices_for_each_default = {
-        "location": {},
-        "lover_bodysuit": {},
-        "man_jacket": {},
-        "lover_guitar": {},
-        "fearless_dress": {},
-        "red_shirt": {},
-        "speak_dress": {},
-        "rep_outfit": {},
-        "folkmore_dress": {},
-        "1989_top": {},
-        "1989_skirt": {},
-        "TTPD_dress": {},
-        "TTPD_set": {},
-        "TTPD_jacket": {},
-        "surprise_dress": {},
-        "midnights_shirtdress": {},
-        "midnights_bodysuit": {},
-        "karma_jacket": {},
-    }
-    overwrite_file("past_data.txt", past_data_default)
-    overwrite_file("choices_for_each.txt", choices_for_each_default)
-
+# functions related to the algorithm itself
 
 def get_final_scores():
     final_scores = {
@@ -348,24 +378,6 @@ def percentage_breakdown(item):
     print("\n")
 
 
-def delete_most_recent_data():
-    choices_for_each = get_data_from_file("choices_for_each.txt")
-    for item in choices_for_each.keys():
-        for style in choices_for_each[item].keys():
-            if get_tour_number() in choices_for_each[item][style]:
-                choices_for_each[item][style].remove(get_tour_number())
-
-    ordered_list = get_data_from_file("ordered_list_of_items_worn.txt")
-    for item in ordered_list.keys():
-        ordered_list[item] = ordered_list[item][:-1]
-    past_data = get_data_from_file("past_data.txt")
-    past_data = past_data[:-1]
-
-    overwrite_file("choices_for_each.txt", choices_for_each)
-    overwrite_file("ordered_list_of_items_worn.txt", ordered_list)
-    overwrite_file("past_data.txt", past_data)
-
-
 def prepare_output():
     print("\n")
     total_expected_points = 0
@@ -400,16 +412,20 @@ def prepare_output():
                 best_scorer = style
         percentage_certainty = round(((highest_chance / total_score_for_item) * 100), 1)
         point_value = point_values_for_questions[item]
-        expected_points = round(point_value * (percentage_certainty/100), 1)
+        expected_points = round(point_value * (percentage_certainty / 100), 1)
         total_expected_points = total_expected_points + expected_points
         print(f"{item}: {best_scorer}, {percentage_certainty}% certainty. expected_points = {expected_points}")
         total_available_points = 0
         for item, point_value in point_values_for_questions.items():
             total_available_points = total_available_points + point_value
     total_expected_points = round(total_expected_points, 0)
-    print(f"Total expected points: {total_expected_points}. As there were {total_available_points} points available, you should get {round((total_expected_points/total_available_points)*100, 1)}%")
+    print(
+        f"Total expected points: {total_expected_points}. As there were {total_available_points} points available, you should get {round((total_expected_points / total_available_points) * 100, 1)}%")
 
     print("\n")
+
+
+# Functions related to data extraction
 def return_data_for_tour():
     index = int(input("Which tour? Input '0' for the most recent tour, -1 for the second most recent etc"))
     choice = input("items and styles or just styles? Please input 1 or 2")
@@ -422,7 +438,6 @@ def return_data_for_tour():
             print(item, style)
         else:
             print(style)
-
 
 
 user_input = input(
